@@ -1,0 +1,2 @@
+add_executable(tatp_stdout tatp_stdout.cpp)
+target_link_libraries(tatp_stdout dbbench_tatp)

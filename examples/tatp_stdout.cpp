@@ -76,8 +76,8 @@ struct TATPStdoutProcedureVisitor {
 
 class TATPStdoutWorker {
 public:
-  explicit TATPStdoutWorker(size_t n_records)
-      : procedure_generator_(n_records) {}
+  explicit TATPStdoutWorker(size_t n_subscriber_records)
+      : procedure_generator_(n_subscriber_records) {}
 
   bool operator()() {
     std::visit(TATPStdoutProcedureVisitor(), procedure_generator_.next());
@@ -90,16 +90,17 @@ private:
 };
 
 int main() {
-  uint64_t n_records = 10;
+  uint64_t n_subscriber_records = 10;
   size_t s_warmup = 2;
   size_t s_measure = 5;
 
-  dbbench::tatp::RecordGenerator record_generator(n_records);
+  dbbench::tatp::RecordGenerator record_generator(n_subscriber_records);
   while (auto record = record_generator.next()) {
     std::visit(TATPStdoutRecordVisitor(), *record);
   }
 
-  std::vector<TATPStdoutWorker> workers = {TATPStdoutWorker(n_records)};
+  std::vector<TATPStdoutWorker> workers = {
+      TATPStdoutWorker(n_subscriber_records)};
   double throughput = dbbench::run(workers, s_warmup, s_measure);
 
   std::cout << "Throughput: " << throughput << std::endl;

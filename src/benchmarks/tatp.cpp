@@ -5,13 +5,13 @@ static std::string leading_zero_pad(uint64_t x) {
   return std::string(15 - s.length(), '0') + s;
 }
 
-dbbench::tatp::RecordGenerator::RecordGenerator(uint64_t n_records)
-    : n_records_(n_records), s_id_(1) {}
+dbbench::tatp::RecordGenerator::RecordGenerator(uint64_t n_subscriber_records)
+    : n_subscriber_records_(n_subscriber_records), s_id_(1) {}
 
 std::optional<dbbench::tatp::Record> dbbench::tatp::RecordGenerator::next() {
   static std::string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-  if (s_id_ > n_records_) {
+  if (s_id_ > n_subscriber_records_) {
     return {};
   }
 
@@ -77,10 +77,12 @@ std::optional<dbbench::tatp::Record> dbbench::tatp::RecordGenerator::next() {
   return record;
 }
 
-dbbench::tatp::ProcedureGenerator::ProcedureGenerator(uint64_t n_records)
-    : n_records_(n_records), a_(n_records <= 1000000    ? 65535
-                                : n_records <= 10000000 ? 1048575
-                                                        : 2097151),
+dbbench::tatp::ProcedureGenerator::ProcedureGenerator(
+    uint64_t n_subscriber_records)
+    : n_subscriber_records_(n_subscriber_records),
+      a_(n_subscriber_records <= 1000000    ? 65535
+         : n_subscriber_records <= 10000000 ? 1048575
+                                            : 2097151),
       distribution_({35, 10, 35, 2, 14, 2, 2}) {}
 
 dbbench::tatp::Procedure dbbench::tatp::ProcedureGenerator::next() {
@@ -117,12 +119,12 @@ dbbench::tatp::Procedure dbbench::tatp::ProcedureGenerator::next() {
         .vlr_location = gen_.uniform(uint32_t(1), uint32_t(4294967295ull))};
 
   case 5:
-    return InsertCallForwarding{
-        .sub_nbr = leading_zero_pad(generate_s_id()),
-        .sf_type = gen_.uniform<uint8_t>(1, 4),
-        .start_time = (uint8_t)(gen_.uniform(0, 2) * 8),
-        .end_time = gen_.uniform<uint8_t>(1, 24),
-        .numberx = leading_zero_pad(gen_.uniform(uint64_t(1), n_records_))};
+    return InsertCallForwarding{.sub_nbr = leading_zero_pad(generate_s_id()),
+                                .sf_type = gen_.uniform<uint8_t>(1, 4),
+                                .start_time = (uint8_t)(gen_.uniform(0, 2) * 8),
+                                .end_time = gen_.uniform<uint8_t>(1, 24),
+                                .numberx = leading_zero_pad(gen_.uniform(
+                                    uint64_t(1), n_subscriber_records_))};
 
   case 6:
     return DeleteCallForwarding{.sub_nbr = leading_zero_pad(generate_s_id()),
@@ -137,7 +139,7 @@ dbbench::tatp::Procedure dbbench::tatp::ProcedureGenerator::next() {
 
 uint64_t dbbench::tatp::ProcedureGenerator::generate_s_id() {
   return (gen_.uniform(uint64_t(0), a_) |
-          gen_.uniform(uint64_t(1), n_records_)) %
-             n_records_ +
+          gen_.uniform(uint64_t(1), n_subscriber_records_)) %
+             n_subscriber_records_ +
          uint64_t(1);
 }

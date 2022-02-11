@@ -108,12 +108,12 @@ using Procedure =
 
 class RecordGenerator {
 public:
-  explicit RecordGenerator(uint64_t n_records);
+  explicit RecordGenerator(uint64_t n_subscriber_records);
 
   std::optional<Record> next();
 
 private:
-  uint64_t n_records_;
+  uint64_t n_subscriber_records_;
   uint64_t s_id_;
   std::deque<Record> queue_;
   Generator gen_;
@@ -121,14 +121,14 @@ private:
 
 class ProcedureGenerator {
 public:
-  explicit ProcedureGenerator(uint64_t n_records);
+  explicit ProcedureGenerator(uint64_t n_subscriber_records);
 
   Procedure next();
 
 private:
   uint64_t generate_s_id();
 
-  uint64_t n_records_;
+  uint64_t n_subscriber_records_;
   uint64_t a_;
   std::discrete_distribution<int> distribution_;
   Generator gen_;

@@ -1,5 +1,7 @@
 #include "dbbench/benchmarks/tatp.hpp"
 
+#include <cassert>
+
 static std::string leading_zero_pad(uint64_t x) {
   std::string s = std::to_string(x);
   return std::string(15 - s.length(), '0') + s;
@@ -18,7 +20,7 @@ std::optional<dbbench::tatp::Record> dbbench::tatp::RecordGenerator::next() {
   if (queue_.empty()) {
     std::array<bool, 10> bit{};
     for (bool &bit_i : bit) {
-      bit_i = gen_.uniform<bool>();
+      bit_i = gen_.uniform(0, 1);
     }
 
     std::array<uint8_t, 10> hex{};
@@ -109,7 +111,7 @@ dbbench::tatp::Procedure dbbench::tatp::ProcedureGenerator::next() {
 
   case 3:
     return UpdateSubscriberData{.s_id = generate_s_id(),
-                                .bit_1 = gen_.uniform<bool>(),
+                                .bit_1 = (bool)gen_.uniform(0, 1),
                                 .sf_type = gen_.uniform<uint8_t>(1, 4),
                                 .data_a = gen_.uniform<uint8_t>()};
 

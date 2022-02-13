@@ -1,6 +1,7 @@
 #ifndef DBBENCH_GENERATOR_HPP
 #define DBBENCH_GENERATOR_HPP
 
+#include <algorithm>
 #include <random>
 #include <utility>
 
@@ -11,15 +12,7 @@ public:
   Generator() : prng_(std::random_device()()) {}
 
   template <typename T> T uniform(T a, T b) {
-    static_assert(std::is_integral_v<T> || std::is_floating_point_v<T>);
-
-    if (std::is_integral_v<T>) {
-      return std::uniform_int_distribution<T>(a, b)(prng_);
-    }
-
-    if (std::is_floating_point_v<T>) {
-      return std::uniform_real_distribution<T>(a, b)(prng_);
-    }
+    return std::uniform_int_distribution<T>(a, b)(prng_);
   }
 
   template <typename T> T uniform() {

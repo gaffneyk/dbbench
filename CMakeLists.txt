@@ -11,6 +11,8 @@ set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
 option(DBBENCH_BUILD_EXAMPLES "Build examples" ON)
 
+find_package(Threads REQUIRED)
+
 add_library(
         dbbench_core
         src/generator.cpp
@@ -23,6 +25,7 @@ target_include_directories(
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include/dbbench>
 )
+target_link_libraries(dbbench_core Threads::Threads)
 
 add_library(
         dbbench_tatp

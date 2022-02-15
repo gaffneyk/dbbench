@@ -1,6 +1,9 @@
 #include "dbbench/benchmarks/tatp.hpp"
 
+#include <array>
 #include <cassert>
+#include <stdexcept>
+#include <utility>
 
 static std::string leading_zero_pad(uint64_t x) {
   std::string s = std::to_string(x);
